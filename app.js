@@ -13,7 +13,7 @@ const getSong = (song) => {
     const playback = () => {
         const playSound = ctx.createBufferSource();
         playSound.buffer = audio;
-        playSound.playbackRate.value = 0.82;
+        playSound.playbackRate.value = 0.86;
         playSound.connect(ctx.destination);
         playSound.start(ctx.currentTime);
     }

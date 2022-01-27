@@ -1,13 +1,105 @@
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <script src="app.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <title>LOFI</title>
-</head>
+<title>Voice Out</title>
+<link href="http://dt.in.th/css-base.css" rel="stylesheet" />
+<style>
+#audio {
+  width: 100%;
+}
+td {
+  text-align: center;
+  border: 1px solid #ccc;
+}
+#ll, #lr, #rl, #rr {
+  text-align: right;
+}
+</style>
 <body>
-    <br/><br/>
-    <button onclick="getSong('Rushes')">Rushes</button>
-    <button onclick="getSong('Wither')">Wither</button>
+
+<div class="wrapper">
+<hr>
+<h2>Select an Audio File</h2>
+
+<p>Please select an audio file <input type="file" id="file"></p>
+
+<p><audio controls id="audio"></audio></p>
+
+<p><label><input type="checkbox" id="filter"> Filter Sound</label></p>
+<hr>
+</div>
+
+<script>
+
+window.onload = function() {
+
+  var audio = document.getElementById('audio')
+  var input = document.getElementById('file')
+  input.onchange = function() {
+    var file = input.files[0]
+    audio.src = URL.createObjectURL(file)
+  }
+
+  var context = new AudioContext()
+
+  var source = context.createMediaElementSource(audio)
+
+  var splitter = context.createChannelSplitter(2)
+  source.connect(splitter)
+
+  var left = context.createGain()
+  var right = context.createGain()
+  splitter.connect(left, 0)
+  splitter.connect(right, 1)
+
+  var leftToLeft = context.createGain()
+  var leftToRight = context.createGain()
+  var rightToLeft = context.createGain()
+  var rightToRight = context.createGain()
+
+  left.connect(leftToLeft)
+  left.connect(leftToRight)
+  right.connect(rightToLeft)
+  right.connect(rightToRight)
+
+  function setVolume(ll, lr, rl, rr) {
+    leftToLeft.gain.value = ll
+    leftToRight.gain.value = lr
+    rightToLeft.gain.value = rl
+    rightToRight.gain.value = rr
+    updateHtml({ ll: ll, lr: lr, rl: rl, rr: rr })
+  }
+
+  function updateHtml(obj) {
+    for (var i in obj) {
+      document.getElementById(i).innerHTML = Math.round(100 * obj[i]) + '%'
+    }
+  }
+
+  var merger = context.createChannelMerger(2)
+  leftToLeft.connect(merger, 0, 0)
+  leftToRight.connect(merger, 0, 1)
+  rightToLeft.connect(merger, 0, 0)
+  rightToRight.connect(merger, 0, 1)
+
+  merger.connect(context.destination)
+
+
+  var checkbox = document.getElementById('filter')
+  checkbox.onchange = function() {
+    updateVolume()
+  }
+
+  function updateVolume() {
+    if (checkbox.checked) {
+      setVolume(0.5, 0.5, -0.5, -0.5)   // filter sound
+    } else {
+      setVolume(1, 0, 0, 1)             // do not filter sound
+    }
+  }
+
+  updateVolume()
+
+}
+
+</script>
 </body>
-</html>
