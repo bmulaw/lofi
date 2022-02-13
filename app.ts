@@ -11,7 +11,7 @@ const ctx: AudioContext = new AudioContext();
 let audio: any;
 
 
-const getSong = (song) => {
+const getSong = (song: string) => {
     fetch('./music/' + song + '.mp3')
     .then(data => data.arrayBuffer())
     .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
@@ -21,7 +21,7 @@ const getSong = (song) => {
     playback(audio);
 }
 
-const playback = (audio) => {
+const playback = (audio: any) => {
     const playSound: AudioBufferSourceNode = ctx.createBufferSource();
     playSound.buffer = audio;
     playSound.playbackRate.value = speed;
