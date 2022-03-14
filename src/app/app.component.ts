@@ -19,7 +19,7 @@ export class AppComponent {
   audio: any;
   
   getSong = (song: string): void => {
-      fetch('./assets/music/' + song + '.mp3')
+      fetch('./assets/music/Ivy.mp3')
       .then(data => data.arrayBuffer())
       .then(arrayBuffer => this.ctx.decodeAudioData(arrayBuffer))
       .then(decodedAudio => {
